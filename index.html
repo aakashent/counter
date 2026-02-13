@@ -9,125 +9,207 @@
 <meta name="theme-color" content="#0f172a">
 
 <style>
-  :root {
-    --bg1: #0f172a;
-    --bg2: #1e293b;
-    --accent: #3b82f6;
-    --accent2: #2563eb;
-    --text: #f1f5f9;
+  :root{
+    --bg1:#0b1224;
+    --bg2:#14213d;
+    --glass:rgba(255,255,255,.07);
+    --stroke:rgba(255,255,255,.12);
+    --text:#f1f5f9;
+    --muted:rgba(241,245,249,.75);
+    --accent:#3b82f6;
+    --accent2:#2563eb;
+    --danger:#ef4444;
   }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, var(--bg1), var(--bg2));
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    color: var(--text);
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    background:
+      radial-gradient(900px 500px at 20% 15%, rgba(59,130,246,.35), transparent 55%),
+      radial-gradient(900px 500px at 80% 85%, rgba(37,99,235,.25), transparent 55%),
+      linear-gradient(135deg, var(--bg1), var(--bg2));
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    color:var(--text);
   }
 
-  .card {
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(12px);
-    padding: 22px 26px;
-    border-radius: 16px;
-    text-align: center;
-    box-shadow: 0 18px 36px rgba(0,0,0,0.4);
-    transition: all 0.25s ease;
-    width: 220px;
+  .card{
+    width:min(360px, calc(100vw - 32px));
+    background:var(--glass);
+    border:1px solid var(--stroke);
+    border-radius:18px;
+    padding:22px 22px 18px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow:
+      0 18px 50px rgba(0,0,0,.45),
+      inset 0 1px 0 rgba(255,255,255,.08);
   }
 
-  .card.expanded {
-    width: 380px;
-    padding: 30px;
+  .top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
   }
 
-  h1 {
-    font-size: 18px;
-    margin: 0 0 12px;
-    font-weight: 600;
+  .title{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    text-align:left;
   }
 
-  .counter {
-    font-size: 56px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    transition: transform 0.15s ease;
+  h1{
+    margin:0;
+    font-size:16px;
+    font-weight:650;
+    letter-spacing:.3px;
   }
 
-  button {
-    appearance: none;
-    border: none;
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 10px;
-    cursor: pointer;
-    color: white;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    box-shadow: 0 8px 18px rgba(59,130,246,0.35);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  .sub{
+    font-size:12px;
+    color:var(--muted);
   }
 
-  button:hover { transform: translateY(-1px); }
-  button:active { transform: translateY(1px) scale(0.99); }
-
-  .controls {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-top: 10px;
+  .pill{
+    font-size:12px;
+    color:var(--muted);
+    border:1px solid var(--stroke);
+    padding:6px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.05);
+    user-select:none;
   }
 
-  .secondary {
-    background: rgba(255,255,255,0.12);
-    box-shadow: none;
+  .counter{
+    font-variant-numeric: tabular-nums;
+    font-size:72px;
+    font-weight:800;
+    line-height:1;
+    margin:10px 0 16px;
+    text-align:center;
+    letter-spacing:-1px;
+    transition:transform .15s ease;
+    text-shadow: 0 10px 30px rgba(0,0,0,.35);
   }
 
-  .history {
-    display: none;
-    margin-top: 16px;
-    text-align: left;
-    max-height: 220px;
-    overflow-y: auto;
-    font-size: 13px;
-    opacity: 0.92;
+  .primary{
+    width:100%;
+    border:none;
+    cursor:pointer;
+    color:#fff;
+    font-size:17px;
+    font-weight:700;
+    padding:14px 16px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 12px 24px rgba(59,130,246,.35);
+    transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+  }
+  .primary:hover{ transform:translateY(-1px); filter:saturate(1.05); }
+  .primary:active{ transform:translateY(1px) scale(.99); box-shadow:0 8px 16px rgba(59,130,246,.28); }
+
+  .controls{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
   }
 
-  .history.visible { display: block; }
+  .btn{
+    flex:1;
+    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.06);
+    color:var(--text);
+    font-weight:650;
+    font-size:14px;
+    padding:10px 12px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:transform .12s ease, background .12s ease;
+  }
+  .btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.08); }
+  .btn:active{ transform:translateY(1px); }
 
-  .history li {
-    padding: 6px 4px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+  .btn.reset{
+    border-color: rgba(239,68,68,.35);
+    background: rgba(239,68,68,.10);
   }
 
-  .hint {
-    margin-top: 10px;
-    font-size: 12px;
-    opacity: 0.75;
+  .history{
+    display:none;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid rgba(255,255,255,.10);
+    text-align:left;
+  }
+  .history.visible{ display:block; }
+
+  .history h2{
+    margin:0 0 8px;
+    font-size:13px;
+    color:var(--muted);
+    font-weight:650;
+  }
+
+  .list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    max-height:220px;
+    overflow:auto;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(0,0,0,.12);
+  }
+
+  .list li{
+    padding:9px 10px;
+    font-size:13px;
+    border-bottom:1px solid rgba(255,255,255,.06);
+    color:rgba(241,245,249,.92);
+  }
+  .list li:last-child{ border-bottom:none; }
+
+  .hint{
+    margin-top:10px;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
   }
 </style>
 </head>
 
 <body>
+  <div class="card">
+    <div class="top">
+      <div class="title">
+        <h1>Counter</h1>
+        <div class="sub">Timestamps saved locally</div>
+      </div>
+      <div id="countPill" class="pill">0 total</div>
+    </div>
 
-<div id="card" class="card">
-  <h1>Counter</h1>
-  <div id="counter" class="counter">0</div>
+    <div id="counter" class="counter">0</div>
 
-  <button id="addBtn" type="button">Add +1</button>
+    <button id="addBtn" class="primary" type="button">Add +1</button>
 
-  <div class="controls">
-    <button id="historyBtn" class="secondary" type="button">History</button>
-    <button id="sizeBtn" class="secondary" type="button">Expand</button>
+    <div class="controls">
+      <button id="historyBtn" class="btn" type="button">History</button>
+      <button id="resetBtn" class="btn reset" type="button">Reset</button>
+    </div>
+
+    <div id="historyWrap" class="history">
+      <h2>Click history</h2>
+      <ul id="historyList" class="list"></ul>
+    </div>
+
+    <div class="hint">Install: Safari → Share → Add to Home Screen</div>
   </div>
-
-  <ul id="history" class="history"></ul>
-
-  <div class="hint">Tip: install via Safari → Share → Add to Home Screen</div>
-</div>
 
 <script>
   // --- PWA service worker ---
@@ -135,71 +217,84 @@
     navigator.serviceWorker.register("./sw.js");
   }
 
-  // --- App state ---
+  // --- State ---
   let count = 0;
   let timestamps = [];
 
   const els = {
-    card: document.getElementById("card"),
     counter: document.getElementById("counter"),
-    history: document.getElementById("history"),
+    pill: document.getElementById("countPill"),
     addBtn: document.getElementById("addBtn"),
     historyBtn: document.getElementById("historyBtn"),
-    sizeBtn: document.getElementById("sizeBtn"),
+    resetBtn: document.getElementById("resetBtn"),
+    historyWrap: document.getElementById("historyWrap"),
+    historyList: document.getElementById("historyList"),
   };
 
-  // Load saved data
-  const saved = JSON.parse(localStorage.getItem("counterData") || "null");
+  const STORAGE_KEY = "counterData_v1";
+
+  // Load
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
   if (saved) {
     count = saved.count || 0;
     timestamps = Array.isArray(saved.timestamps) ? saved.timestamps : [];
   }
 
-  function save() {
-    localStorage.setItem("counterData", JSON.stringify({ count, timestamps }));
+  function save(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ count, timestamps }));
   }
 
-  function updateDisplay() {
+  function update(){
     els.counter.textContent = count;
+    els.pill.textContent = `${count} total`;
   }
 
-  function renderHistory() {
-    els.history.innerHTML = timestamps.map(t => `<li>${t}</li>`).join("");
+  function renderHistory(){
+    if (timestamps.length === 0) {
+      els.historyList.innerHTML = `<li style="color:rgba(241,245,249,.7)">No entries yet</li>`;
+      return;
+    }
+    els.historyList.innerHTML = timestamps.map(t => `<li>${t}</li>`).join("");
   }
 
-  function increment() {
+  function bump(){
+    els.counter.style.transform = "scale(1.10)";
+    setTimeout(() => els.counter.style.transform = "scale(1)", 120);
+  }
+
+  function increment(){
     count++;
-    const now = new Date();
-    timestamps.unshift(now.toLocaleString());
-
-    updateDisplay();
+    timestamps.unshift(new Date().toLocaleString());
+    update();
     renderHistory();
     save();
-
-    // pop animation
-    els.counter.style.transform = "scale(1.15)";
-    setTimeout(() => (els.counter.style.transform = "scale(1)"), 120);
+    bump();
   }
 
-  function toggleHistory() {
-    els.history.classList.toggle("visible");
-    els.historyBtn.textContent = els.history.classList.contains("visible") ? "Hide" : "History";
+  function toggleHistory(){
+    const on = els.historyWrap.classList.toggle("visible");
+    els.historyBtn.textContent = on ? "Hide" : "History";
   }
 
-  function toggleSize() {
-    els.card.classList.toggle("expanded");
-    els.sizeBtn.textContent = els.card.classList.contains("expanded") ? "Compact" : "Expand";
+  function resetAll(){
+    count = 0;
+    timestamps = [];
+    update();
+    renderHistory();
+    save();
+    // hide after reset (nice UX)
+    els.historyWrap.classList.remove("visible");
+    els.historyBtn.textContent = "History";
   }
 
   // Wire up
   els.addBtn.addEventListener("click", increment);
   els.historyBtn.addEventListener("click", toggleHistory);
-  els.sizeBtn.addEventListener("click", toggleSize);
+  els.resetBtn.addEventListener("click", resetAll);
 
-  // Initial render
-  updateDisplay();
+  // Initial paint
+  update();
   renderHistory();
 </script>
-
 </body>
 </html>
