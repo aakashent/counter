@@ -16,8 +16,12 @@
     --stroke:rgba(255,255,255,.12);
     --text:#f1f5f9;
     --muted:rgba(241,245,249,.75);
+
+    /* Theme (defaults to blue) */
     --accent:#3b82f6;
     --accent2:#2563eb;
+    --accentGlow: rgba(59,130,246,.35);
+
     --danger:#ef4444;
   }
   *{ box-sizing:border-box; }
@@ -28,14 +32,13 @@
     display:grid;
     place-items:center;
     background:
-      radial-gradient(900px 500px at 20% 15%, rgba(59,130,246,.35), transparent 55%),
-      radial-gradient(900px 500px at 80% 85%, rgba(37,99,235,.25), transparent 55%),
+      radial-gradient(900px 500px at 20% 15%, var(--accentGlow), transparent 55%),
+      radial-gradient(900px 500px at 80% 85%, rgba(37,99,235,.18), transparent 55%),
       linear-gradient(135deg, var(--bg1), var(--bg2));
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     color:var(--text);
   }
 
-  /* COMPACT: slimmer like your original */
   .card{
     width: 252px;
     max-width: calc(100vw - 24px);
@@ -64,6 +67,12 @@
     gap:2px;
     text-align:left;
     min-width:0;
+  }
+
+  .right{
+    display:flex;
+    align-items:center;
+    gap:8px;
   }
 
   h1{
@@ -95,6 +104,25 @@
     white-space:nowrap;
   }
 
+  .dots{
+    border:1px solid var(--stroke);
+    background:rgba(255,255,255,.06);
+    color:var(--text);
+    width:32px;
+    height:28px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:800;
+    font-size:18px;
+    line-height:1;
+    display:grid;
+    place-items:center;
+    padding-bottom:2px; /* visually centre */
+    transition:transform .12s ease, background .12s ease;
+  }
+  .dots:hover{ transform:translateY(-1px); background:rgba(255,255,255,.08); }
+  .dots:active{ transform:translateY(1px); }
+
   .counter{
     font-variant-numeric: tabular-nums;
     font-size:64px;
@@ -117,11 +145,11 @@
     padding:12px 14px;
     border-radius:14px;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
-    box-shadow:0 12px 24px rgba(59,130,246,.35);
+    box-shadow:0 12px 24px var(--accentGlow);
     transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
   }
   .primary:hover{ transform:translateY(-1px); filter:saturate(1.05); }
-  .primary:active{ transform:translateY(1px) scale(.99); box-shadow:0 8px 16px rgba(59,130,246,.28); }
+  .primary:active{ transform:translateY(1px) scale(.99); box-shadow:0 8px 16px rgba(0,0,0,.25); }
 
   .controls{
     display:flex;
@@ -147,6 +175,51 @@
   .btn.reset{
     border-color: rgba(239,68,68,.35);
     background: rgba(239,68,68,.10);
+  }
+
+  .panel{
+    display:none;
+    margin-top:12px;
+    padding:10px 10px 12px;
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:14px;
+    background:rgba(0,0,0,.14);
+  }
+  .panel.visible{ display:block; }
+
+  .panel h2{
+    margin:0 0 8px;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:800;
+    letter-spacing:.2px;
+  }
+
+  .themes{
+    display:grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap:8px;
+  }
+
+  .swatch{
+    width:100%;
+    aspect-ratio: 1 / 1;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);
+    cursor:pointer;
+    position:relative;
+    transition:transform .12s ease;
+  }
+  .swatch:hover{ transform:translateY(-1px); }
+  .swatch.selected::after{
+    content:"✓";
+    position:absolute;
+    inset:0;
+    display:grid;
+    place-items:center;
+    font-weight:900;
+    color:white;
+    text-shadow: 0 2px 10px rgba(0,0,0,.5);
   }
 
   .history{
@@ -196,10 +269,14 @@
   <div class="card">
     <div class="top">
       <div class="title">
-        <h1>Advice &amp; Guidance</h1>
+        <h1>Counter</h1>
         <div class="sub">Timestamps saved locally</div>
       </div>
-      <div id="countPill" class="pill">0 total</div>
+
+      <div class="right">
+        <div id="countPill" class="pill">0 total</div>
+        <button id="settingsBtn" class="dots" type="button" aria-label="Settings">⋯</button>
+      </div>
     </div>
 
     <div id="counter" class="counter">0</div>
@@ -209,6 +286,12 @@
     <div class="controls">
       <button id="historyBtn" class="btn" type="button">History</button>
       <button id="resetBtn" class="btn reset" type="button">Reset</button>
+    </div>
+
+    <!-- Settings panel -->
+    <div id="settingsPanel" class="panel">
+      <h2>Colour scheme</h2>
+      <div class="themes" id="themes"></div>
     </div>
 
     <div id="historyWrap" class="history">
@@ -224,6 +307,35 @@
     navigator.serviceWorker.register("./sw.js");
   }
 
+  // --- Storage keys ---
+  const STORAGE_KEY = "counterData_v1";
+  const THEME_KEY = "counterTheme_v1";
+
+  // --- Themes (accent, accent2, glow) ---
+  const THEMES = {
+    blue:   { a:"#3b82f6", b:"#2563eb", g:"rgba(59,130,246,.35)" },
+    purple: { a:"#8b5cf6", b:"#6d28d9", g:"rgba(139,92,246,.35)" },
+    green:  { a:"#22c55e", b:"#16a34a", g:"rgba(34,197,94,.30)" },
+    orange: { a:"#f97316", b:"#ea580c", g:"rgba(249,115,22,.30)" },
+    pink:   { a:"#ec4899", b:"#db2777", g:"rgba(236,72,153,.30)" },
+  };
+
+  function applyTheme(name){
+    const t = THEMES[name] || THEMES.blue;
+    document.documentElement.style.setProperty("--accent", t.a);
+    document.documentElement.style.setProperty("--accent2", t.b);
+    document.documentElement.style.setProperty("--accentGlow", t.g);
+    localStorage.setItem(THEME_KEY, name);
+    highlightSelected(name);
+  }
+
+  function highlightSelected(name){
+    document.querySelectorAll(".swatch").forEach(el => {
+      el.classList.toggle("selected", el.dataset.theme === name);
+    });
+  }
+
+  // --- State ---
   let count = 0;
   let timestamps = [];
 
@@ -235,10 +347,27 @@
     resetBtn: document.getElementById("resetBtn"),
     historyWrap: document.getElementById("historyWrap"),
     historyList: document.getElementById("historyList"),
+    settingsBtn: document.getElementById("settingsBtn"),
+    settingsPanel: document.getElementById("settingsPanel"),
+    themes: document.getElementById("themes"),
   };
 
-  const STORAGE_KEY = "counterData_v1";
+  // Build swatches
+  for (const [name, t] of Object.entries(THEMES)) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "swatch";
+    btn.dataset.theme = name;
+    btn.style.background = `linear-gradient(135deg, ${t.a}, ${t.b})`;
+    btn.title = name.charAt(0).toUpperCase() + name.slice(1);
+    btn.addEventListener("click", () => applyTheme(name));
+    els.themes.appendChild(btn);
+  }
 
+  // Load theme
+  applyTheme(localStorage.getItem(THEME_KEY) || "blue");
+
+  // Load counter data
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
   if (saved) {
     count = saved.count || 0;
@@ -286,10 +415,22 @@
     els.historyBtn.textContent = "History";
   }
 
+  function toggleSettings(){
+    const on = els.settingsPanel.classList.toggle("visible");
+    if (on) {
+      // keep it tidy: close history if opening settings
+      els.historyWrap.classList.remove("visible");
+      els.historyBtn.textContent = "History";
+    }
+  }
+
+  // Wire up
   els.addBtn.addEventListener("click", increment);
   els.historyBtn.addEventListener("click", toggleHistory);
   els.resetBtn.addEventListener("click", resetAll);
+  els.settingsBtn.addEventListener("click", toggleSettings);
 
+  // Initial paint
   update();
   renderHistory();
 </script>
