@@ -20,7 +20,6 @@
     --accent2:#2563eb;
     --danger:#ef4444;
   }
-
   *{ box-sizing:border-box; }
 
   body{
@@ -36,12 +35,14 @@
     color:var(--text);
   }
 
+  /* COMPACT: slimmer like your original */
   .card{
-    width:min(360px, calc(100vw - 32px));
+    width: 252px;
+    max-width: calc(100vw - 24px);
     background:var(--glass);
     border:1px solid var(--stroke);
     border-radius:18px;
-    padding:22px 22px 18px;
+    padding:18px 16px 14px;
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     box-shadow:
@@ -51,10 +52,10 @@
 
   .top{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
-    gap:12px;
-    margin-bottom:14px;
+    gap:10px;
+    margin-bottom:10px;
   }
 
   .title{
@@ -62,36 +63,44 @@
     flex-direction:column;
     gap:2px;
     text-align:left;
+    min-width:0;
   }
 
   h1{
     margin:0;
-    font-size:16px;
-    font-weight:650;
-    letter-spacing:.3px;
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.2px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
   .sub{
-    font-size:12px;
+    font-size:11px;
     color:var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
 
   .pill{
-    font-size:12px;
+    font-size:11px;
     color:var(--muted);
     border:1px solid var(--stroke);
-    padding:6px 10px;
+    padding:5px 8px;
     border-radius:999px;
     background:rgba(255,255,255,.05);
     user-select:none;
+    white-space:nowrap;
   }
 
   .counter{
     font-variant-numeric: tabular-nums;
-    font-size:72px;
-    font-weight:800;
+    font-size:64px;
+    font-weight:850;
     line-height:1;
-    margin:10px 0 16px;
+    margin:10px 0 12px;
     text-align:center;
     letter-spacing:-1px;
     transition:transform .15s ease;
@@ -103,9 +112,9 @@
     border:none;
     cursor:pointer;
     color:#fff;
-    font-size:17px;
-    font-weight:700;
-    padding:14px 16px;
+    font-size:16px;
+    font-weight:800;
+    padding:12px 14px;
     border-radius:14px;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
     box-shadow:0 12px 24px rgba(59,130,246,.35);
@@ -116,8 +125,8 @@
 
   .controls{
     display:flex;
-    gap:10px;
-    margin-top:10px;
+    gap:8px;
+    margin-top:9px;
   }
 
   .btn{
@@ -125,9 +134,9 @@
     border:1px solid var(--stroke);
     background:rgba(255,255,255,.06);
     color:var(--text);
-    font-weight:650;
-    font-size:14px;
-    padding:10px 12px;
+    font-weight:750;
+    font-size:13px;
+    padding:9px 10px;
     border-radius:12px;
     cursor:pointer;
     transition:transform .12s ease, background .12s ease;
@@ -142,8 +151,8 @@
 
   .history{
     display:none;
-    margin-top:14px;
-    padding-top:12px;
+    margin-top:12px;
+    padding-top:10px;
     border-top:1px solid rgba(255,255,255,.10);
     text-align:left;
   }
@@ -151,33 +160,32 @@
 
   .history h2{
     margin:0 0 8px;
-    font-size:13px;
+    font-size:12px;
     color:var(--muted);
-    font-weight:650;
+    font-weight:750;
   }
 
   .list{
     list-style:none;
     padding:0;
     margin:0;
-    max-height:220px;
+    max-height:200px;
     overflow:auto;
     border-radius:12px;
     border:1px solid rgba(255,255,255,.10);
     background:rgba(0,0,0,.12);
   }
-
   .list li{
-    padding:9px 10px;
-    font-size:13px;
+    padding:8px 9px;
+    font-size:12px;
     border-bottom:1px solid rgba(255,255,255,.06);
     color:rgba(241,245,249,.92);
   }
   .list li:last-child{ border-bottom:none; }
 
   .hint{
-    margin-top:10px;
-    font-size:12px;
+    margin-top:8px;
+    font-size:11px;
     color:var(--muted);
     text-align:center;
   }
@@ -188,7 +196,7 @@
   <div class="card">
     <div class="top">
       <div class="title">
-        <h1>Counter</h1>
+        <h1>Advice &amp; Guidance</h1>
         <div class="sub">Timestamps saved locally</div>
       </div>
       <div id="countPill" class="pill">0 total</div>
@@ -208,16 +216,14 @@
       <ul id="historyList" class="list"></ul>
     </div>
 
-    <div class="hint">Install: Safari → Share → Add to Home Screen</div>
+    <div class="hint">Safari → Share → Add to Home Screen</div>
   </div>
 
 <script>
-  // --- PWA service worker ---
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js");
   }
 
-  // --- State ---
   let count = 0;
   let timestamps = [];
 
@@ -233,7 +239,6 @@
 
   const STORAGE_KEY = "counterData_v1";
 
-  // Load
   const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
   if (saved) {
     count = saved.count || 0;
@@ -258,17 +263,14 @@
   }
 
   function bump(){
-    els.counter.style.transform = "scale(1.10)";
+    els.counter.style.transform = "scale(1.09)";
     setTimeout(() => els.counter.style.transform = "scale(1)", 120);
   }
 
   function increment(){
     count++;
     timestamps.unshift(new Date().toLocaleString());
-    update();
-    renderHistory();
-    save();
-    bump();
+    update(); renderHistory(); save(); bump();
   }
 
   function toggleHistory(){
@@ -279,20 +281,15 @@
   function resetAll(){
     count = 0;
     timestamps = [];
-    update();
-    renderHistory();
-    save();
-    // hide after reset (nice UX)
+    update(); renderHistory(); save();
     els.historyWrap.classList.remove("visible");
     els.historyBtn.textContent = "History";
   }
 
-  // Wire up
   els.addBtn.addEventListener("click", increment);
   els.historyBtn.addEventListener("click", toggleHistory);
   els.resetBtn.addEventListener("click", resetAll);
 
-  // Initial paint
   update();
   renderHistory();
 </script>
